@@ -9,12 +9,12 @@ function createButtons(number){
 $(document).ready(function () {
 
 
-  game = new BowlingGame();
+  game = new Game();
   
     $(".thead").html(function (i, origText) {
       return origText + "<th class='theader'> Round </th>";
     });
-    for (var j = 0; j < 10; j++) {
+    for (var j = 0; j < game.frames.length; j++) {
       $(".thead").html(function (i, origText) {
         return origText + "<th class='theader"+j+"'>" + (j+1).toString() + "</th>";
       });
@@ -24,57 +24,58 @@ $(document).ready(function () {
       return origText + "<td class='fscorec'> Score </td>";
     });
     ////
-    for (var j = 0; j < 10; j++) {
+    for (var j = 0; j < game.frames.length; j++) {
       $(".fscorer").html(function (i, origText) {
-        return origText + "<td class='fscorec"+j+"'>" + game.getFrameScore(j) + "</td>";
+        // console.log(game.frames);
+        return origText + "<td class='fscorec"+j+"'>" + game.frames[j].frameTotal() + "</td>";
       });
     }
   
     $(".rollzeror").html(function (i, origText) {
       return origText + "<td class='rollzeroc'> Roll One Round</td>";
     });
-    for (var j = 0; j < 10; j++) {
+    for (var j = 0; j < game.frames.length; j++) {
       $(".rollzeror").html(function (i, origText) {
-        return origText + "<td class='rollzeroc"+j+"'>" + game.getRolls(0,j) + "</td>";
+        return origText + "<td class='rollzeroc"+j+"'>" + game.frames[j].rolls[0] + "</td>";
       });
     }
   
     $(".rolloner").html(function (i, origText) {
       return origText + "<td class='rollzeroc'> Roll Two Round</td>";
     });
-    for (var j = 0; j < 10; j++) {
+    for (var j = 0; j < game.frames.length; j++) {
       $(".rolloner").html(function (i, origText) {
-        return origText + "<td class='rollonec"+j+"'>" + game.getRolls(1,j) + "</td>";
+        return origText + "<td class='rollonec"+j+"'>" + game.frames[j].rolls[1] + "</td>";
       });
     }
   
     $(".bonusone").html(function (i, origText) {
       return origText + "<td class='bonusonec'> Bonus Round 1</td>";
     });
-    for (var j = 0; j < 10; j++) {
+    for (var j = 0; j < 9; j++) {
       $(".bonusone").html(function (i, origText) {
-        return origText + "<td class='bonusonec"+j+"'>" + game.getBonus(0,j) + "</td>";
+        return origText + "<td class='bonusonec"+j+"'>" + game.frames[j].bonus[0] + "</td>";
       });
     }
     $(".bonustwo").html(function (i, origText) {
       return origText + "<td class='bonustwoc'> Bonus Round 2</td>";
     });
-    for (var j = 0; j < 10; j++) {
+    for (var j = 0; j < 9; j++) {
       $(".bonustwo").html(function (i, origText) {
-        return origText + "<td class='bonustwoc"+j+"'>" + game.getBonus(1,j) + "</td>";
+        return origText + "<td class='bonustwoc"+j+"'>" + game.frames[j].bonus[1] + "</td>";
       });
     }
 
   function updatePage(){
-    for (var j = 0; j < 10; j++) {
-      $(".fscorec"+j).text(game.getFrameScore(j));
-      $(".rollzeroc"+j).text(game.getRolls(0,j));
-      $(".rollonec"+j).text(game.getRolls(1,j));
-      $(".bonusonec"+j).text(game.getBonus(0,j));
-      $(".bonustwoc"+j).text(game.getBonus(1,j));
+    for (var j = 0; j < 9; j++) {
+      $(".fscorec"+j).text(game.frames[j].frameTotal());
+      $(".rollzeroc"+j).text(game.frames[j].rolls[0]);
+      $(".rollonec"+j).text(game.frames[j].rolls[1]);
+      $(".bonusonec"+j).text(game.frames[j].bonus[0]);
+      $(".bonustwoc"+j).text(game.frames[j].bonus[1]);
       
     }
-    $("#totalScore").text(game.calculateScore());
+    $("#totalScore").text(game.totalScore());
   }
   
   createButtons(10);
@@ -83,12 +84,12 @@ $(document).ready(function () {
   $("button").click(function () {
     $("#error").text("");
     try{
-      if (game.isStrike(parseInt($(this).val()))){
+      if (game.currentFrame().hasStrike()){
         $('#jff').html('<img class="jff" src="images/lebostrike.gif" />');
   
       } else if (parseInt($(this).val()) === 0){
         $('#jff').html('<img class="jff" src="images/lebogutter.gif" />');
-      } else if(game.isSpare(parseInt($(this).val()))){
+      } else if(game.currentFrame().hasSpare()){
         $('#jff').html('<img class="jff" src="images/lebospare.gif" />');
 
       }else  {
